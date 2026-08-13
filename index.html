@@ -891,7 +891,7 @@ function loop(now){
         burst(h.x+h.size/2,h.y+h.size/2,'#65e7ff',8);
         h.el.remove();hazards.splice(i,1);continue;
       }
-      if(useShield()){h.el.remove();hazards.splice(i,1);continue;}
+    
       gameOver();return;
     }
     if(h.x<-120||h.x>s.w+120||h.y<-140||h.y>s.h+140){
