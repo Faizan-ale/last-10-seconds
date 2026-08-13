@@ -955,7 +955,8 @@ game.addEventListener('pointerup',endTouch);game.addEventListener('pointercancel
 startBtn.addEventListener('click',startGame);
 skinBtn.addEventListener('click',openSkinLocker);
 backHome.addEventListener('click',showHome);
-if(gameBack){     gameBack.addEventListener('pointerdown',e=>e.stopPropagation());     gameBack.addEventListener('click',showHome); }
+
+ if(gameBack){     gameBack.addEventListener('pointerdown',e=>e.stopPropagation());     gameBack.addEventListener('click',showHome); }
 homePlay.addEventListener('click',startGame);
 homeSkin.addEventListener('click',openSkinLocker);
 homeHow.addEventListener('click',()=>{homeHowText.style.display=homeHowText.style.display==='none'?'block':'none'});
