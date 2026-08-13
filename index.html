@@ -927,31 +927,68 @@ document.addEventListener('keyup',e=>{
   if(e.key==='ArrowUp'||k==='w')setKey('up',false);
   if(e.key==='ArrowDown'||k==='s')setKey('down',false);
 });
+let touchVX = 0;
+let touchVY = 0;
+let touchActive = false;
+let touchPointerId = null;
+let touchX = 0;
+let touchY = 0;
 
-let touchActive=false;
-game.addEventListener('pointerdown',e=>{
-  if(!running)return;
-  touchActive=true;
+game.addEventListener('pointerdown', e => {
+  if (!running) return;
+
+  touchActive = true;
+  touchPointerId = e.pointerId;
+
+  touchX = e.clientX;
+  touchY = e.clientY;
+
   game.setPointerCapture?.(e.pointerId);
-  game.dataset.touchX=e.clientX;game.dataset.touchY=e.clientY;
 });
-game.addEventListener('pointermove',e=>{
-  if(!running||!touchActive)return;
-  const dx=e.clientX-Number(game.dataset.touchX),dy=e.clientY-Number(game.dataset.touchY);
-  const ax=Math.abs(dx),ay=Math.abs(dy);
-  keys.left=keys.right=keys.up=keys.down=false;
-  if(Math.max(ax,ay)>8){
-    if(ax>=ay){
-      keys.left=false;keys.right=false;
-      keys[dx>0?'right':'left']=true;
-    }else{
-      keys.up=false;keys.down=false;
-      keys[dy>0?'down':'up']=true;
-    }
-  }
+
+game.addEventListener('pointermove', e => {
+  if (!running || !touchActive || e.pointerId !== touchPointerId) return;
+
+  const dx = e.clientX - touchX;
+  const dy = e.clientY - touchY;
+  const distance = Math.hypot(dx, dy);
+
+  if (distance < 1) return;
+
+  const nx = dx / distance;
+  const ny = dy / distance;
+
+  const strength = Math.min(distance / 35, 1);
+
+  touchVX = nx * strength;
+  touchVY = ny * strength;
+
+  keys.left = false;
+  keys.right = false;
+  keys.up = false;
+  keys.down = false;
+
+  touchX = e.clientX;
+  touchY = e.clientY;
 });
-function endTouch(){touchActive=false;keys.left=keys.right=keys.up=keys.down=false}
-game.addEventListener('pointerup',endTouch);game.addEventListener('pointercancel',endTouch);
+
+function endTouch(e) {
+  if (e && e.pointerId !== touchPointerId) return;
+
+  touchActive = false;
+  touchPointerId = null;
+
+  touchVX = 0;
+  touchVY = 0;
+
+  keys.left = false;
+  keys.right = false;
+  keys.up = false;
+  keys.down = false;
+}
+game.addEventListener('pointerup', endTouch);
+game.addEventListener('pointercancel', endTouch);
+game.addEventListener('lostpointercapture', endTouch);
 startBtn.addEventListener('click',startGame);
 skinBtn.addEventListener('click',openSkinLocker);
 backHome.addEventListener('click',showHome);
